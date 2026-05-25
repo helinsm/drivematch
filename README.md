@@ -38,6 +38,24 @@ GPT-4o is ~$0.005 input / $0.015 output per 1K tokens. A typical DriveMatch requ
 
 To reduce cost, edit `api/recommend.js` and change `model: 'gpt-4o'` to `model: 'gpt-4o-mini'` — roughly 10x cheaper, still capable for this task.
 
+**Always set a spend cap on your OpenAI account** at https://platform.openai.com/account/limits — recommended $5–$10/month for a portfolio demo.
+
+## Rate limiting (optional but recommended)
+
+`api/recommend.js` supports IP-based rate limiting via Upstash Redis. Without it, anyone who knows the URL can spam the endpoint.
+
+1. Sign up at [upstash.com](https://upstash.com/) (free tier covers this)
+2. Create a Redis database (any region close to your Vercel region)
+3. Copy **REST URL** and **REST Token** from the database dashboard
+4. In your Vercel project: **Settings → Environment Variables → Add**:
+   - `UPSTASH_REDIS_REST_URL` = the REST URL
+   - `UPSTASH_REDIS_REST_TOKEN` = the REST token
+5. Redeploy
+
+Default limit: **6 requests per IP per 60 seconds**. Adjust the constants at the top of `api/recommend.js` to taste.
+
+If the Upstash env vars aren't set, the function still works — it just skips rate limiting. So you can deploy without Upstash and add it later.
+
 ## Local development
 
 The static HTML works on its own when opened from disk, but the API function does not — for that you need `vercel dev`:
